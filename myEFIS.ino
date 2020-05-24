@@ -598,6 +598,7 @@ void _serveMAIN()
   html = html + "  <p><input type=\"button\" value=\"Change\" onclick=\"sendOUT(2)\"><p>";
   html = html + "  <p><a href=\"settings.htm\"><input type=\"button\" value=\"Settings\"></a><p>";
   html = html + "</div>";
+  
   html = html + "<script>";
   html = html + "function sendOUT(out) {";
   html = html + "  var xhttp = new XMLHttpRequest();";
@@ -672,27 +673,38 @@ void _serveSETTINGS()
 
   if (wifiMode == STATION_MODE)
   {
-    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"ap\"> Access Point</label>";
-    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"st\" checked> Station</label>";
+    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"ap\" onclick=\"apmode();\"> Access Point</label>";
+    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"st\" onclick=\"stmode();\" checked> Station</label>";
   }
   else
   {
-    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"ap\" checked> Access Point</label>";
-    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"st\"> Station</label>";
+    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"ap\" onclick=\"apmode();\" checked> Access Point</label>";
+    html = html + "<label><input type=\"radio\" name=\"wifimode\" value=\"st\" onclick=\"stmode();\"> Station</label>";
   }
   
-  //html = html + "<label>SSID">
-  //html = html + "<select id='wifi' name='wifi'>";
-  //html = html + " <option value=\"\" selected>Selet</option>";
-  //for (int i = 0; i < n; ++i)
-  //  html = html + " <option value=\"" + (String)(WiFi.SSID(i)) + "\">" + (String)(WiFi.SSID(i)) + "</option>";    
-  //html = html + "</select></label>";
+  html = html + "<label>SSID";
+  if (wifiMode == STATION_MODE)
+    html = html + "<select id='ssid' name='ssid'>";
+  else
+    html = html + "<select id='ssid' name='ssid' disabled>";
 
-  html = html + "<label>SSID <input type=\"text\" maxlength=\"30\" value=\"" + String(ssid) + "\" name=\"ssid\"/></label>";
-  html = html + "<label>Password <input type=\"text\" maxlength=\"30\" value=\"" + String(password) + "\" name=\"pass\"/></label>";
-
+  if ((String)(ssid) == "")
+    html = html + " <option value=\"Select\"> Select </option>";
+  else
+    html = html + " <option value=\"" + (String)(ssid) + "\">" + (String)(ssid) + "</option>";
+  for (int i = 0; i < n; ++i)
+  {
+    if (String(WiFi.SSID(i)) != String(ssid))
+      html = html + " <option value=\"" + (String)(WiFi.SSID(i)) + "\">" + (String)(WiFi.SSID(i)) + "</option>";
+  }  
+  html = html + "</select></label>";
+  
+  if (wifiMode == STATION_MODE)
+    html = html + "<label>Password <input id='pass' type=\"text\" maxlength=\"30\" value=\"" + String(password) + "\" name=\"pass\"/></label>";
+  else
+    html = html + "<label>Password <input id='pass' type=\"text\" maxlength=\"30\" value=\"" + String(password) + "\" name=\"pass\"/ disabled></label>";
+  
   html = html + "</div>";
-  // End
 
   // Red
   html = html + "<div class=\"section\"><span>2</span>IP Settings</div>";
@@ -700,21 +712,21 @@ void _serveSETTINGS()
 
   if (ipMode == DHCP_MODE)
   {
-    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"dhcp\" checked> DHCP</label>";
-    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"ipfx\"> Fix IP</label>";
+    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"dhcp\" onclick=\"dhcpmode();\" checked> DHCP</label>";
+    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"ipfx\" onclick=\"fipmode();\"> Fix IP</label>";
+    html = html + "<label>IP Address <input id='ipaddress' type=\"text\" maxlength=\"16\" value=\"" + String(ipAddress.toString()) + "\" name=\"ipaddress\"/ disabled></label>";
+    html = html + "<label>Mask <input id='mask' type=\"text\" maxlength=\"16\" value=\"" + String(netMask.toString()) + "\" name=\"mask\"/ disabled></label>";
+    html = html + "<label>Gateway <input id='gateway' type=\"text\" maxlength=\"16\" value=\"" + String(gateWay.toString()) + "\" name=\"gateway\"/ disabled></label>";
   }
   else
   {
-    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"dhcp\"> DHCP</label>";
-    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"ipfx\" checked> Fix IP</label>";
+    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"dhcp\" onclick=\"dhcpmode();\"> DHCP</label>";
+    html = html + "<label><input type=\"radio\" name=\"ipmode\" value=\"ipfx\" onclick=\"fipmode();\" checked> Fix IP</label>";
+    html = html + "<label>IP Address <input id='ipaddress' type=\"text\" maxlength=\"16\" value=\"" + String(ipAddress.toString()) + "\" name=\"ipaddress\"/></label>";
+    html = html + "<label>Mask <input id='mask' type=\"text\" maxlength=\"16\" value=\"" + String(netMask.toString()) + "\" name=\"mask\"/></label>";
+    html = html + "<label>Gateway <input id='gateway' type=\"text\" maxlength=\"16\" value=\"" + String(gateWay.toString()) + "\" name=\"gateway\"/></label>";
   }
-
-  html = html + "<label>IP Address <input type=\"text\"  maxlength=\"16\" value=\"" + String(ipAddress.toString()) + "\" name=\"ipaddress\"/></label>";
-  html = html + "<label>Mask <input type=\"text\" maxlength=\"16\" value=\"" + String(netMask.toString()) + "\" name=\"mask\"/></label>";
-  html = html + "<label>Gateway <input type=\"text\" maxlength=\"16\" value=\"" + String(gateWay.toString()) + "\" name=\"gateway\"/></label>";
-
   html = html + "</div>";
-  // End
                         
   html = html + "<div class=\"button-section\">";
   html = html + "  <input type=\"submit\" value=\"Save\">";
@@ -723,6 +735,29 @@ void _serveSETTINGS()
   
   html = html + "</div>";
   html = html + "</div>";
+
+  html = html + "<script>";
+  html = html + "function apmode() {";
+  html = html + "  document.getElementById('ssid').disabled = true;";
+  html = html + "  document.getElementById('pass').disabled = true;";
+  html = html + "}";
+  html = html + "function stmode() {";
+  html = html + "  document.getElementById('ssid').disabled = false;";
+  html = html + "  document.getElementById('pass').disabled = false;";
+  html = html + "}";
+  html = html + "function dhcpmode() {";
+  html = html + "  document.getElementById('ipaddress').disabled = true;";
+  html = html + "  document.getElementById('mask').disabled = true;";
+  html = html + "  document.getElementById('gateway').disabled = true;";
+  html = html + "}";
+  html = html + "function fipmode() {";
+  html = html + "  document.getElementById('ipaddress').disabled = false;";
+  html = html + "  document.getElementById('mask').disabled = false;";
+  html = html + "  document.getElementById('gateway').disabled = false;";
+  html = html + "}";
+  
+  html = html + "</script>";
+  
   html = html + "</form>";
   html = html + "</div>";
 
