@@ -17,14 +17,31 @@ int ioOut;
 int ioLed;
 int ioIn;
 
+/////////////////////
+// Airspeed Sensor //
+/////////////////////
+unsigned long AirspeedSTick = 0;
+int AirspeedPin = A0;   // TODO
+int AirspeedSBuffer = 0;
+int AirspeedSCounter = 0;
+
+int IAS = 0;            // Airspeed
+
+/////////////////////
+// Flight recorder //
+/////////////////////
+int R_IAS_Sensor = 0;
+int R_IAS_avg = 0;
+int R_QNH = 1013;
+int R_ALT_Current = 0;
+int R_ALT_avg = 0;
+int R_VSI_avg = 0;
+
 ///////////
 // Wi-Fi //
 ///////////
-unsigned long wifiCurrentTime = millis();
-unsigned long wifiPreviousTime = 0;
-
-unsigned long wifiCurrentAPTime = millis();
-unsigned long wifiPreviousAPTime = 0;
+unsigned long wifiAPTick = 0;
+unsigned long wifiLEDTick = 0;
 
 ///////////
 // Wi-Fi //
@@ -90,13 +107,6 @@ int turnAngle = 10;
 int heading = 90;
 int vario = 2;
 
-/////////               
-// ASI //
-/////////
-int AirspeedPin = A0;   // To be defined
-int AirspeedSensorValueBuffer;
-int AirspeedSensorValueCount;
-unsigned long AirspeedSensorValueTimer = 0; 
 
 //============//
 // MAIN SETUP //

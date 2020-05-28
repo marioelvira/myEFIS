@@ -37,8 +37,7 @@ void _WifiLoop()
       // Http setup
       _HttpSetup();
 
-      wifiCurrentAPTime = millis();
-      wifiPreviousAPTime = wifiCurrentAPTime;
+      wifiAPTick = millis();
         
       wifiStatus = WIFI_ON_ACCESSPOINT;
       break;
@@ -47,8 +46,7 @@ void _WifiLoop()
       // Station mode...
       if (wifiMode == STATION_MODE)
       {       
-        wifiCurrentAPTime = millis();
-        if (wifiCurrentAPTime - wifiPreviousAPTime >= WIFI_ACCESSPOINT_TIMEOUT)
+        if (millis() - wifiAPTick >= WIFI_ACCESSPOINT_TIMEOUT)
         {
           _HttpEnd();
 
@@ -58,8 +56,7 @@ void _WifiLoop()
       // Access point mode...
       else
       {
-        wifiCurrentAPTime = millis();
-        wifiPreviousAPTime = wifiCurrentAPTime;
+        wifiAPTick = millis();
       }      
       break;
     
@@ -162,21 +159,19 @@ void _WifiLedLoop()
   switch (wifiStatus)
   {
     case WIFI_START_ACCESSPOINT:
-      wifiCurrentTime = millis();
-      wifiPreviousTime = wifiCurrentTime;
+      wifiLEDTick = millis();
       ioLed = IO_OFF;
       break;
 
     case WIFI_ON_ACCESSPOINT:
-      wifiCurrentTime = millis();
-      if (wifiCurrentTime - wifiPreviousTime >= WIFI_BLINK_ACCESSPOINT)
+      if (millis() - wifiLEDTick >= WIFI_BLINK_ACCESSPOINT)
       {
         if (ioLed == IO_OFF)
           ioLed = IO_ON;
         else
           ioLed = IO_OFF;
 
-        wifiPreviousTime = wifiCurrentTime;
+        wifiLEDTick = millis();
 
         #if (_SERIAL_DEBUG_ == 1)
         if (wifiMode == STATION_MODE)
@@ -188,15 +183,14 @@ void _WifiLedLoop()
     case WIFI_START_STATION:
     case WIFI_ON_STATION:
     case WIFI_STATION_CONNECTING:
-      wifiCurrentTime = millis();
-      if (wifiCurrentTime - wifiPreviousTime >= WIFI_BLINK_STATION)
+      if (millis() - wifiLEDTick >= WIFI_BLINK_STATION)
       {
         if (ioLed == IO_OFF)
           ioLed = IO_ON;
         else
           ioLed = IO_OFF;
 
-        wifiPreviousTime = wifiCurrentTime;
+        wifiLEDTick = millis();
       } 
       break;
 

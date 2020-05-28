@@ -1,67 +1,59 @@
+#define AIRSPEEDS_MS      200
+#define AIRSPEEDS_MAX     998
+#define AIRSPEEDS_SHIFT   520
+#define AIRDENSITY        1.225 // 1.225 kg/m^3
+#define MPS2KNOTS         1.94  // m/s to knots
+#define MPS2KMH           1.61  // m/s to km/s
+
 //////////////
 // Airspeed //
 //////////////
 void Airspeed()
 {
-  int   airspeedSensorValue = 0;
-  int   airspeedSensorShift = 520;
-  int   airspeedSensorMax = 998;
-  float airDensity = 1.2;       // kg/m^3
+  int   airspeedSValue = 0;
   float airPressure = 0;
-  float mps2knots = 1.94;       // convert meter per seconds to knots
-
   
-
-/*
-  if (AirspeedSensorValueTimer == 0)
+  if (millis() - AirspeedSTick < AIRSPEEDS_MS)
   {
-    AirspeedSensorValueTimer = millis();
-    AirspeedSensorValueBuffer = 0;
-    AirspeedSensorValueCount = 0;
+     R_IAS_Sensor = analogRead(AirspeedPin);
+     AirspeedSBuffer += R_IAS_Sensor;
+     AirspeedSCounter++;
   }
-  
-  // this buffering techique should be changed. 
-  // short running vaerage should be better
-  if (millis() - AirspeedSensorValueTimer < BufferTimer)
+  else
   {
-    R_IAS_Sensor = analogRead(AirspeedPin);
-    AirspeedSensorValueBuffer += R_IAS_Sensor;
-    AirspeedSensorValueCount += 1;
-    
-  } else {
-    
-    AirspeedSensorValue = AirspeedSensorValueBuffer / AirspeedSensorValueCount;
+    airspeedSValue = AirspeedSBuffer / AirspeedSCounter;
 
-    //Serial.print("AirspeedSensorValueCount = ");
-    //Serial.println(AirspeedSensorValueCount);
-   
-    //Max pressure for MPXV7002 is 2Kpa (112 knots)
+    // Max pressure for MPXV7002 is 2Kpa (112 knots)
     //Map sensor data between AirspeedSensorShift and AirspeedSensorMax to pressure between 0 and 2000 Pa
-    //AirPressure = map(AirspeedSensorValue, AirspeedSensorShift, AirspeedSensorMax, 0, 2000);
+    //airPressure = map(airspeedSValue, AIRSPEEDS_SHIFT, AIRSPEEDS_MAX, 0, 2000);
 
-    //Max pressure for MPXV5010DP is 10Kpa (250 knots)
+    // Max pressure for MPXV5010DP is 10Kpa (250 knots)
     //Map sensor data between AirspeedSensorShift and AirspeedSensorMax to pressure between 0 and 10000 Pa
-    AirPressure = map(AirspeedSensorValue, AirspeedSensorShift, AirspeedSensorMax, 0, 10000);
- 
-    if (AirPressure < 0)
-      AirPressure = 0;
+    airPressure = map(airspeedSValue, AIRSPEEDS_SHIFT, AIRSPEEDS_MAX, 0, 10000);
 
-    //Serial.print("Pressure = ");
-    //Serial.println(AirPressure);
- 
-    IAS = mps2knots * sqrt(2*AirPressure/AirDensity);
+    if (airPressure < 0)
+      airPressure = 0;
 
-    R_IAS_avg = IAS;
-    //Serial.print("IAS = ");
-    //Serial.println(IAS); 
+    #if (_SERIAL_DEBUG_ == 1)
+    Serial.print("Air Pressure: ");
+    Serial.println(airPressure);
+    #endif
 
-    if (IAS < 20)
+    //IAS = MPS2KNOTS * sqrt(2*airPressure/AIRDENSITY);
+    IAS = MPS2KMH * sqrt(2*airPressure/AIRDENSITY);
+
+    #if (_SERIAL_DEBUG_ == 1)
+    Serial.print("Air Speed: ");
+    Serial.print(IAS);
+    //Serial.println(" knots");
+    Serial.println(" km/h");
+    #endif
+
+    if (IAS < 10)
      IAS = 0;
-
-    textAreaSPEED.ClearArea();
-    textAreaSPEED.Printf("%03d", IAS); 
-
-    AirspeedSensorValueTimer = 0;
+    
+    AirspeedSTick = millis();
+    AirspeedSBuffer = 0;
+    AirspeedSCounter = 0;
   }
-  */
 }
