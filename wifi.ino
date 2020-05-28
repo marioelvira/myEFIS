@@ -1,7 +1,7 @@
 /////////////////
 // Wi-Fi setup //
 /////////////////
-void _WifiSetup(void)
+void _WifiSetup()
 {
   // Wi-Fi status
   wifiStatus = WIFI_START_ACCESSPOINT;

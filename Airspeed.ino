@@ -8,7 +8,7 @@
 //////////////
 // Airspeed //
 //////////////
-void Airspeed()
+void Airspeed (void)
 {
   int   airspeedSValue = 0;
   float airPressure = 0;

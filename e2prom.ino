@@ -1,4 +1,4 @@
-void _ConfigSetup(void)
+void _ConfigSetup()
 {
   #if (_READ_EEPROM_ == 1)
   _ReadEEPROM();
@@ -157,8 +157,8 @@ void _readCONFIG (void)
   }
 }
 
-void _ResetEEPROM() {
-
+void _ResetEEPROM()
+{
   #if (_SERIAL_DEBUG_ == 1)
   Serial.println("Erasing E2PROM 512 size... ");
   #endif
@@ -171,8 +171,8 @@ void _ResetEEPROM() {
   EEPROM.commit();    //Store data to EEPROM
 }
 
-void _ReadEEPROM() {
-
+void _ReadEEPROM()
+{
   int j = 0;
 
   #if (_SERIAL_DEBUG_ == 1)

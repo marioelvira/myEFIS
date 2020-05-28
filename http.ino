@@ -1,7 +1,7 @@
 ////////////////
 // http setup //
 ////////////////
-void _HttpSetup(void)
+void _HttpSetup()
 {
   // Http status
   httpStatus = HTTP_INIT;
@@ -10,7 +10,7 @@ void _HttpSetup(void)
 //////////////
 // http end //
 //////////////
-void _HttpEnd(void)
+void _HttpEnd()
 {
   httpServer.stop();
 }

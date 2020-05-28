@@ -1,7 +1,7 @@
 //////////////
 // IO setup //
 //////////////
-void _IOSetup(void)
+void _IOSetup()
 { 
   pinMode(DI_LED, OUTPUT);
   digitalWrite(DI_LED, DI_OFF);
